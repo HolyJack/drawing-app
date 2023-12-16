@@ -1,7 +1,5 @@
 import { io } from "socket.io-client";
 
-const URL =
-  process.env.NODE_ENV === "production" ? undefined : "http://localhost:3000";
+const URL = "https://ancient-fortress-01607-9de125cb985f.herokuapp.com";
 
-//@ts-expect-error: example from docs
 export const socket = io(URL);

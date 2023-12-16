@@ -3,14 +3,14 @@ import { useEffect, useRef, useState } from "react";
 import { KonvaEventObject } from "konva/lib/Node";
 import { UserData, Users } from "../App";
 import { socket } from "../socket";
-import TypedShapeMap, { Tool } from "../utils/Shapes/Shape";
+import TypedShapeMap, { MyShape, Tool } from "../utils/Shapes/Shape";
 import {
   MyShapeConfigs,
   MyShapeConfigsWithTool,
 } from "../utils/Shapes/ShapeTypes";
 
-export const WIDTH = 1024 * 2;
-export const HEIGHT = 1024 * 2;
+export const WIDTH = 1024;
+export const HEIGHT = 1024;
 
 export default function DrawingBoard({
   username,
@@ -29,11 +29,7 @@ export default function DrawingBoard({
   const [size, setSize] = useState<number>(5);
   const [shape, setShape] = useState<MyShapeConfigs | undefined>();
   const [stagedShape, setStagedShape] = useState<MyShapeConfigs | undefined>();
-  const {
-    init: initShape,
-    update: updateShape,
-    component: MyShape,
-  } = TypedShapeMap[tool as Tool];
+  const { init: initShape, update: updateShape } = TypedShapeMap[tool as Tool];
 
   function submitShape(shape: MyShapeConfigsWithTool) {
     socket.emit("new shape", room, shape);
@@ -43,7 +39,9 @@ export default function DrawingBoard({
     setStagedShape(undefined);
   }, [shapes]);
 
-  function handleMouseDown(e: KonvaEventObject<MouseEvent>) {
+  function handleMouseDown(
+    e: KonvaEventObject<MouseEvent> | KonvaEventObject<TouchEvent>,
+  ) {
     isDrawing.current = true;
     const pos = e.target.getStage()?.getPointerPosition();
     if (!pos) return;
@@ -60,7 +58,9 @@ export default function DrawingBoard({
     });
   }
 
-  function handleMouseMove(e: KonvaEventObject<MouseEvent>) {
+  function handleMouseMove(
+    e: KonvaEventObject<MouseEvent> | KonvaEventObject<TouchEvent>,
+  ) {
     const pos = e.target.getStage()?.getPointerPosition();
     if (!pos) return;
     if (isDrawing && shape) setShape(updateShape(shape, pos));
@@ -74,14 +74,13 @@ export default function DrawingBoard({
   }
 
   return (
-    <div className="h-full w-full overflow-scroll bg-gray-300">
+    <div className="h-full w-full touch-none overflow-scroll bg-gray-300">
       <div>
         <select value={tool} onChange={(e) => setTool(e.target.value as Tool)}>
           <option value="line">line</option>
           <option value="rectangle">rectangle</option>
           <option value="circle">circle</option>
           <option value="eraser">eraser</option>
-          <option value="text">text</option>
         </select>
         <input
           type="color"
@@ -104,18 +103,21 @@ export default function DrawingBoard({
         onMouseDown={handleMouseDown}
         onMouseUp={handleMouseUp}
         onMouseMove={handleMouseMove}
+        onTouchStart={handleMouseDown}
+        onTouchMove={handleMouseMove}
+        onTouchEnd={handleMouseUp}
       >
         <Layer listening={false}>
           <Rect x={0} y={0} width={WIDTH} height={HEIGHT} fill="#ffffff" />
         </Layer>
-        <Layer listening={false}>
-          {shapes.map((shape, i) => (
-            <MyShape key={i} {...shape} />
-          ))}
-        </Layer>
         <Layer>
-          <MyShape {...stagedShape} />
-          <MyShape {...shape} />
+          <Group>
+            {shapes.map((shape, i) => (
+              <MyShape key={i} {...shape} />
+            ))}
+          </Group>
+          <MyShape tool={tool} {...stagedShape} />
+          <MyShape tool={tool} {...shape} />
         </Layer>
         <Layer listening={false}>
           {Object.keys(users).map((user) => {
@@ -133,7 +135,7 @@ export default function DrawingBoard({
                     offsetX={-8}
                   />
                 </Group>
-                <MyShape key={user + "C"} {...shape} />
+                <MyShape key={user + "C"} tool={shape?.tool || ""} {...shape} />
               </>
             );
           })}
