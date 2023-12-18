@@ -21,7 +21,12 @@ const io = new socket_io_1.Server(httpServer, {
         origin: URL,
     },
 });
-const shapes = {};
+const shapes = {
+    room1: [],
+    room2: [],
+    room3: [],
+    room4: [],
+};
 const users_data = {};
 io.on("connection", (socket) => {
     socket.join("preview");
@@ -32,10 +37,9 @@ io.on("connection", (socket) => {
         socket.leave("preview");
         socket.join(room);
         socket.emit("joined room", room);
-        io.in(room).emit("update shapes");
     });
-    socket.on("preview", () => {
-        socket.emit("preview", shapes);
+    socket.on("get initial preview", () => {
+        io.in(socket.id).emit("initial preview", shapes);
     });
     socket.on("disconnect", () => {
         Object.keys(users_data).forEach((room) => {
@@ -43,12 +47,15 @@ io.on("connection", (socket) => {
         });
     });
     socket.on("leaveroom", (room) => socket.leave(room));
+    socket.on("initial shapes", (room) => {
+        io.in(socket.id).emit("initial shapes", shapes[room]);
+    });
     socket.on("new shape", (room, shape) => __awaiter(void 0, void 0, void 0, function* () {
         if (!shapes[room])
             shapes[room] = [];
         shapes[room].push(shape);
-        io.in(room).emit("update shapes", shapes[room]);
-        io.in("preview").emit("preview", shapes);
+        socket.to(room).emit("add new shape", shape);
+        io.in("preview").emit(`update preview ${room}`, shape);
     }));
     socket.on("broadcast user", (room, { user_id, username, pos, shape, color }) => {
         if (!users_data[room])
