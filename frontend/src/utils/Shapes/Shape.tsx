@@ -1,29 +1,58 @@
+import React from "react";
+
+import isEqual from "lodash.isequal";
 import {
   MyShapeConfigs,
   MyShapeConfigsWithTool,
   ToolConfig,
+  ToolConfigMap,
 } from "./ShapeTypes";
 import line, { name as l } from "./Line";
 import rectangle, { name as r } from "./Rect";
-import eraser, { name as e } from "./Eraser";
+import eraser, { name as er } from "./Eraser";
 import circle, { name as c } from "./Circle";
-import React from "react";
-import isEqual from "lodash.isequal";
+import rectangleFill, { name as rf } from "./RectFill";
+import circleFill, { name as cf } from "./CircleFill";
+import ellipse, { name as e } from "./Ellipse";
+import ellipseFill, { name as ef } from "./EllipseFill";
+import star, { name as s } from "./Star";
+import starFill, { name as sf } from "./StarFill";
+import text, { name as t } from "./Text/Text";
 
-const tool = [];
-const ShapeMap: Record<string, ToolConfig<MyShapeConfigs>> = {};
+const tool: string[] = [];
+const ShapeMap: ToolConfigMap = {};
 
-ShapeMap[l] = line;
-ShapeMap[r] = rectangle;
-ShapeMap[e] = eraser;
-ShapeMap[c] = circle;
+function registerShape<T>(name: string, toolConfig: ToolConfig<T>) {
+  tool.push(name);
+  ShapeMap[name] = toolConfig;
+}
 
-tool.push(l);
-tool.push(r);
-tool.push(e);
-tool.push(c);
+registerShape(l, line);
+registerShape(r, rectangle);
+registerShape(e, ellipse);
+registerShape(s, star);
+registerShape(c, circle);
 
-export type Tool = typeof l | typeof r | typeof e | typeof c;
+registerShape(er, eraser);
+registerShape(rf, rectangleFill);
+registerShape(cf, circleFill);
+registerShape(ef, ellipseFill);
+registerShape(sf, starFill);
+
+registerShape(t, text);
+
+export type Tool =
+  | typeof l
+  | typeof r
+  | typeof e
+  | typeof c
+  | typeof s
+  | typeof rf
+  | typeof cf
+  | typeof ef
+  | typeof er
+  | typeof sf
+  | typeof t;
 
 const TypedShapeMap: Record<
   Tool,
@@ -50,5 +79,5 @@ const MyShape = React.memo((props: MyShapeConfigsWithTool) => {
   return <Component {...componentProps} />;
 }, areEqual);
 
-export { MyShape };
+export { MyShape, tool };
 export default TypedShapeMap;
