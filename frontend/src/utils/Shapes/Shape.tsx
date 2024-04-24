@@ -17,7 +17,6 @@ import ellipse, { name as e } from "./Ellipse";
 import ellipseFill, { name as ef } from "./EllipseFill";
 import star, { name as s } from "./Star";
 import starFill, { name as sf } from "./StarFill";
-import text, { name as t } from "./Text/Text";
 
 const tool: string[] = [];
 const ShapeMap: ToolConfigMap = {};
@@ -39,8 +38,6 @@ registerShape(cf, circleFill);
 registerShape(ef, ellipseFill);
 registerShape(sf, starFill);
 
-registerShape(t, text);
-
 export type Tool =
   | typeof l
   | typeof r
@@ -51,8 +48,7 @@ export type Tool =
   | typeof cf
   | typeof ef
   | typeof er
-  | typeof sf
-  | typeof t;
+  | typeof sf;
 
 const TypedShapeMap: Record<
   Tool,

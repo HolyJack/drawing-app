@@ -31,7 +31,7 @@ export default function Preview({ disabled }: { disabled: boolean }) {
           value={room}
           room={room}
           initialShapes={initialData[room]}
-          className="aspect-square h-72 border shadow hover:shadow-xl hover:shadow-blue-100"
+          className="aspect-square h-72 border bg-white shadow hover:shadow-xl hover:shadow-blue-100"
           disabled={disabled}
         />
       ))}

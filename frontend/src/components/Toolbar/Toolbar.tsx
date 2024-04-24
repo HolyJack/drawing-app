@@ -8,7 +8,6 @@ import {
   faPen,
   faSquare as faSquareFill,
   faStar as faStarFill,
-  faTextSlash,
 } from "@fortawesome/free-solid-svg-icons";
 
 import {
@@ -71,10 +70,6 @@ export default function Toolbar({
       </ToolWrapper>
       <ToolWrapper onClick={() => setTool("starFill")}>
         <FontAwesomeIcon icon={faStarFill} />
-      </ToolWrapper>
-      <ToolbardDelimer />
-      <ToolWrapper onClick={() => setTool("text")}>
-        <FontAwesomeIcon icon={faTextSlash} />
       </ToolWrapper>
       <ToolbardDelimer />
       <ToolWrapper onClick={exportFunc}>

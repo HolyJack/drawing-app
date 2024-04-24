@@ -1,0 +1,20 @@
+# Start build image
+FROM node:20.11.1-alpine  as build
+
+COPY ./backend/package.json ./
+COPY ./backend/package-lock.json ./
+COPY ./backend/server.ts ./
+COPY ./backend/tsconfig.json ./
+COPY ./backend/webpack.config.js ./
+
+ENV FRONT_URL="http://localhost:8080"
+ENV PORT=$PORT
+RUN npm install && npm run build
+
+# Start production image build
+FROM node:20.11.1-alpine  as prod
+
+COPY --from=build /node_modules /node_modules
+COPY --from=build /build ./
+
+CMD ["server.js"]

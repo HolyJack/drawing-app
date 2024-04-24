@@ -48,7 +48,7 @@ export default function RoomJoinButton({
         scaleY={width / WIDTH}
       >
         <Layer listening={false}>
-          <Rect x={0} y={0} width={width} height={height} fill="#ffffff" />
+          <Rect x={0} y={0} width={width} height={height} />
           {shapes && shapes.map((shape, i) => <MyShape key={i} {...shape} />)}
         </Layer>
       </Stage>

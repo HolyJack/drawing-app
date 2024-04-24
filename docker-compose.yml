@@ -1,0 +1,18 @@
+services:
+  backend:
+    build:
+      dockerfile: Dockerfile.backend
+    environment:
+      FRONT_URL: https://localhost:8080
+      PORT: 40
+    ports:
+      - 40:40
+  frontend:
+    build:
+      dockerfile: Dockerfile.frontend
+    environment:
+      SERVER_URL: https://localhost:40
+    depends_on:
+      - backend
+    ports:
+      - 8080:8080
